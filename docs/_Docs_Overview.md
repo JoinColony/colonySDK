@@ -14,6 +14,12 @@ _Learn to build with Colony! Get a head start on your next project!_ colonyStart
 
 - Yarn
 - Node 9.5
+- Docker 
+
+The latest colonyNetwork contracts requires solc, which can be installed with Docker by running
+```
+docker pull ethereum/solc:0.4.23
+```
 
 _You may find it helpful to use Node Version Manager (`nvm`) to manage node versions._
 
