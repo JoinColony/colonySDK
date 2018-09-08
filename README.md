@@ -44,7 +44,7 @@ yarn global add @colony/colony-starter
 Move to your working directory and unpack the [colony-starter-basic](/packages/colony-starter-basic) package:
 
 ```
-colony-starter colony-starter-basic
+yarn colony-starter colony-starter-basic
 ```
 
 ### Step 3
