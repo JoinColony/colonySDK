@@ -67,7 +67,7 @@ export const getToken = (colonyClient) => ({
     const owner = await colonyClient.tokenClient.contract.owner.call()
 
     // Format total supply
-    const totalSupply = amount.toNumber()
+    const totalSupply = amount.toString()
 
     // return token
     return {
