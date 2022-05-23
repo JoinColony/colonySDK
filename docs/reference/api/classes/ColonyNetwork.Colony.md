@@ -9,6 +9,7 @@
 ### Properties
 
 - [address](ColonyNetwork.Colony.md#address)
+- [colonyNetwork](ColonyNetwork.Colony.md#colonynetwork)
 - [version](ColonyNetwork.Colony.md#version)
 - [SupportedVersions](ColonyNetwork.Colony.md#supportedversions)
 
@@ -31,6 +32,12 @@
 
 ___
 
+### colonyNetwork
+
+• **colonyNetwork**: [`ColonyNetwork`](ColonyNetwork.ColonyNetwork-1.md)
+
+___
+
 ### version
 
 • **version**: `number`
@@ -42,7 +49,7 @@ ___
 ▪ `Static` **SupportedVersions**: (``8`` \| ``9``)[]
 
 The currently supported Colony version. If a Colony is not on this version it has to be upgraded.
-If this is not an option, ColonySDK might throw errors at certain points. Usage of ColonyJS is advised in these cases
+If this is not an option, Colony SDK might throw errors at certain points. Usage of ColonyJS is advised in these cases
 
 ## Methods
 
@@ -67,18 +74,18 @@ Anyone can call this function. Claims funds _for_ the Colony that have been sent
 A tupel of event data and contract receipt
 
 **Event data**
-| Property | Description |
-| :------ | :------ |
-| `agent` | The address that is responsible for triggering this event |
-| `token` | The token address |
-| `fee` | The fee deducted for rewards |
-| `payoutRemainder` | The remaining funds moved to the top-level domain pot |
+| Property | Type | Description |
+| :------ | :------ | :------ |
+| `agent` | string | The address that is responsible for triggering this event |
+| `token` | string | The token address |
+| `fee` | BigNumber | The fee deducted for rewards |
+| `payoutRemainder` | BigNumber | The remaining funds moved to the top-level domain pot |
 
 ___
 
 ### createTeam
 
-▸ **createTeam**(): `Promise`<[{ `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber`  }, `ContractReceipt`]\>
+▸ **createTeam**(): `Promise`<[{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`, (...`args`: []) => `Promise`<{ `domainColor`: `string` ; `domainName`: `string` ; `domainPurpose`: `string`  }\>] \| [{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`]\>
 
 Create a team within a Colony
 
@@ -87,16 +94,24 @@ Currently you can only add domains within the `Root` domain. This restriction wi
 
 #### Returns
 
-`Promise`<[{ `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber`  }, `ContractReceipt`]\>
+`Promise`<[{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`, (...`args`: []) => `Promise`<{ `domainColor`: `string` ; `domainName`: `string` ; `domainPurpose`: `string`  }\>] \| [{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`]\>
 
-A tupel of event data and contract receipt
+A tupel of event data, contract receipt and optional metadata getter function
 
 **Event data**
-| Property | Description |
-| :------ | :------ |
-| `agent` | The address that is responsible for triggering this event |
-| `domainId` | Integer domain id of the created team |
-| `fundingPotId` | Integer id of the corresponding funding pot |
+| Property | Type | Description |
+| :------ | :------ | :------ |
+| `agent` | string | The address that is responsible for triggering this event |
+| `domainId` | BigNumber | Integer domain id of the created team |
+| `fundingPotId` | BigNumber | Integer id of the corresponding funding pot |
+| `metadata` | string | IPFS CID of metadata attached to this transaction |
+
+**Metadata** (can be obtained by calling and awaiting the `getMetadata` function)
+| Property | Type | Description |
+| :------ | :------ | :------ |
+| `domainName` | string | The human readable name assigned to this team |
+| `domainColor` | string | The color assigned to this team |
+| `domainPurpose` | string | The purpose for this team (a broad description) |
 
 ___
 
@@ -240,13 +255,13 @@ import { Tokens } from '@colony/sdk';
 A tupel of event data and contract receipt
 
 **Event data**
-| Property | Description |
-| :------ | :------ |
-| `agent` | The address that is responsible for triggering this event |
-| `fromPot` | The source funding pot |
-| `toPot` | The target funding pot |
-| `amount` | The amount that was transferred |
-| `token` | The token address being transferred |
+| Property | Type | Description |
+| :------ | :------ | :------ |
+| `agent` | string | The address that is responsible for triggering this event |
+| `fromPot` | BigNumber | The source funding pot |
+| `toPot` | BigNumber | The target funding pot |
+| `amount` | BigNumber | The amount that was transferred |
+| `token` | string | The token address being transferred |
 
 ___
 
@@ -290,7 +305,8 @@ import { Tokens } from '@colony/sdk';
 A tupel of event data and contract receipt
 
 **Event data**
-| Property | Description |
-| :------ | :------ |
-| `agent` | The address that is responsible for triggering this event |
-| `paymentId` | The newly added payment id |
+| Property | Type | Description |
+| :------ | :------ | :------ |
+| `agent` | string | The address that is responsible for triggering this event |
+| `fundamentalId` | BigNumber | The newly added payment id |
+| `nPayouts` | BigNumber | Number of payouts in total |

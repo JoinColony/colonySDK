@@ -13,8 +13,8 @@ import {
   IColonyNetwork__factory,
 } from '@colony/colony-js/extras';
 
-import { addressesAreEqual, getLogs, nonNullable } from './utils';
-import { Ethers6Filter } from './types';
+import { addressesAreEqual, getLogs, nonNullable } from '../utils';
+import type { Ethers6Filter } from '../types';
 
 /** Valid sources for Colony emitted events. Used to map the parsed event data */
 export interface EventSources {

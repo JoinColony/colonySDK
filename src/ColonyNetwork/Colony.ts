@@ -1,7 +1,6 @@
 import {
   ColonyClientV8,
   ColonyClientV9,
-  ColonyNetworkClient,
   SignerOrProvider,
   Id,
   Extension,
@@ -12,6 +11,7 @@ import {
   // eslint-disable-next-line max-len
   ColonyFundsMovedBetweenFundingPots_address_uint256_uint256_uint256_address_EventObject,
   DomainAdded_uint256_EventObject,
+  DomainMetadataEventObject,
   FundingPotAddedEventObject,
   OneTxPaymentMadeEventObject,
 } from '@colony/colony-js/extras';
@@ -19,22 +19,23 @@ import type { BigNumberish } from 'ethers';
 
 import { ColonyToken } from './ColonyToken';
 import { extractEvent } from '../utils';
+import { ColonyNetwork } from './ColonyNetwork';
 
 export type SupportedColonyClient = ColonyClientV8 | ColonyClientV9;
 
 export class Colony {
   /** The currently supported Colony version. If a Colony is not on this version it has to be upgraded.
-   * If this is not an option, ColonySDK might throw errors at certain points. Usage of ColonyJS is advised in these cases
+   * If this is not an option, Colony SDK might throw errors at certain points. Usage of ColonyJS is advised in these cases
    */
   static SupportedVersions: (8 | 9)[] = [8, 9];
 
   private colonyClient: SupportedColonyClient;
 
-  private networkClient: ColonyNetworkClient;
-
   private signerOrProvider: SignerOrProvider;
 
   address: string;
+
+  colonyNetwork: ColonyNetwork;
 
   version: number;
 
@@ -45,14 +46,18 @@ export class Colony {
    * @remarks
    * Do not use this method directly but use [[ColonyNetwork.getColony]]
    *
+   * @param colonyNetwork A Colony SDK `ColonyNetwork` instance
    * @param colonyClient A ColonyJS `ColonyClient` in the latest supported version
    * @returns A [[Colony]] abstaction instance
    */
-  constructor(colonyClient: SupportedColonyClient) {
+  constructor(
+    colonyNetwork: ColonyNetwork,
+    colonyClient: SupportedColonyClient,
+  ) {
     this.colonyClient = colonyClient;
-    this.networkClient = colonyClient.networkClient;
     this.signerOrProvider = colonyClient.signer || colonyClient.provider;
     this.address = colonyClient.address;
+    this.colonyNetwork = colonyNetwork;
     this.version = colonyClient.clientVersion;
   }
 
@@ -116,14 +121,22 @@ export class Colony {
    * Currently you can only add domains within the `Root` domain. This restriction will be lifted soon
    *
    *
-   * @returns A tupel of event data and contract receipt
+   * @returns A tupel of event data, contract receipt and optional metadata getter function
    *
    * **Event data**
-   * | Property | Description |
-   * | :------ | :------ |
-   * | `agent` | The address that is responsible for triggering this event |
-   * | `domainId` | Integer domain id of the created team |
-   * | `fundingPotId` | Integer id of the corresponding funding pot |
+   * | Property | Type | Description |
+   * | :------ | :------ | :------ |
+   * | `agent` | string | The address that is responsible for triggering this event |
+   * | `domainId` | BigNumber | Integer domain id of the created team |
+   * | `fundingPotId` | BigNumber | Integer id of the corresponding funding pot |
+   * | `metadata` | string | IPFS CID of metadata attached to this transaction |
+   *
+   * **Metadata** (can be obtained by calling and awaiting the `getMetadata` function)
+   * | Property | Type | Description |
+   * | :------ | :------ | :------ |
+   * | `domainName` | string | The human readable name assigned to this team |
+   * | `domainColor` | string | The color assigned to this team |
+   * | `domainPurpose` | string | The purpose for this team (a broad description) |
    */
   async createTeam() {
     const tx = await this.colonyClient['addDomainWithProofs(uint256)'](
@@ -134,7 +147,22 @@ export class Colony {
     const data = {
       ...extractEvent<DomainAdded_uint256_EventObject>('DomainAdded', receipt),
       ...extractEvent<FundingPotAddedEventObject>('FundingPotAdded', receipt),
+      ...extractEvent<DomainMetadataEventObject>('DomainMetadata', receipt),
     };
+
+    if (data.metadata) {
+      const getMetdata =
+        this.colonyNetwork.ipfsMetadata.getMetadataForEvent.bind(
+          this.colonyNetwork.ipfsMetadata,
+          'DomainMetadata',
+          data.metadata,
+        );
+      return [data, receipt, getMetdata] as [
+        typeof data,
+        typeof receipt,
+        typeof getMetdata,
+      ];
+    }
 
     return [data, receipt] as [typeof data, typeof receipt];
   }
@@ -148,12 +176,12 @@ export class Colony {
    * @returns A tupel of event data and contract receipt
    *
    * **Event data**
-   * | Property | Description |
-   * | :------ | :------ |
-   * | `agent` | The address that is responsible for triggering this event |
-   * | `token` | The token address |
-   * | `fee` | The fee deducted for rewards |
-   * | `payoutRemainder` | The remaining funds moved to the top-level domain pot |
+   * | Property | Type | Description |
+   * | :------ | :------ | :------ |
+   * | `agent` | string | The address that is responsible for triggering this event |
+   * | `token` | string | The token address |
+   * | `fee` | BigNumber | The fee deducted for rewards |
+   * | `payoutRemainder` | BigNumber | The remaining funds moved to the top-level domain pot |
    */
   async claimFunds(
     tokenAddress: string = this.colonyClient.tokenClient.address,
@@ -200,10 +228,11 @@ export class Colony {
    * @returns A tupel of event data and contract receipt
    *
    * **Event data**
-   * | Property | Description |
-   * | :------ | :------ |
-   * | `agent` | The address that is responsible for triggering this event |
-   * | `paymentId` | The newly added payment id |
+   * | Property | Type | Description |
+   * | :------ | :------ | :------ |
+   * | `agent` | string | The address that is responsible for triggering this event |
+   * | `fundamentalId` | BigNumber | The newly added payment id |
+   * | `nPayouts` | BigNumber | Number of payouts in total |
    */
   async pay(
     recipient: string,
@@ -263,13 +292,13 @@ export class Colony {
    * @returns A tupel of event data and contract receipt
    *
    * **Event data**
-   * | Property | Description |
-   * | :------ | :------ |
-   * | `agent` | The address that is responsible for triggering this event |
-   * | `fromPot` | The source funding pot |
-   * | `toPot` | The target funding pot |
-   * | `amount` | The amount that was transferred |
-   * | `token` | The token address being transferred |
+   * | Property | Type | Description |
+   * | :------ | :------ | :------ |
+   * | `agent` | string | The address that is responsible for triggering this event |
+   * | `fromPot` | BigNumber | The source funding pot |
+   * | `toPot` | BigNumber | The target funding pot |
+   * | `amount` | BigNumber | The amount that was transferred |
+   * | `token` | string | The token address being transferred |
    */
   async moveFundsToTeam(
     amount: BigNumberish,
