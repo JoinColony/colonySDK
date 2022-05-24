@@ -1,10 +1,18 @@
-import { Record, Static, String } from 'runtypes';
+import { Array, Record, Static, String } from 'runtypes';
 import fetch from 'cross-fetch';
 import wrapFetch from 'fetch-retry';
 
 const fetchRetry = wrapFetch(fetch);
 
 export const IPFS_METADATA = {
+  Annotation: Record({
+    annotationMessage: String,
+  }),
+  ColonyMetadata: Record({
+    colonyDisplayName: String,
+    colonyAvatarHash: String,
+    colonyTokens: Array(String),
+  }),
   DomainMetadata: Record({
     domainName: String,
     domainColor: String,
@@ -17,7 +25,7 @@ export type MetadataValue<T extends MetadataKey> = Static<
   typeof IPFS_METADATA[T]
 >;
 
-const CLOUDFLARE_IPFS_ENDPOINT = 'https://cloudflare-ipfs.com/ipfs/';
+const DEFAULT_IPFS_ENDPOINT = 'https://gateway.pinata.cloud/ipfs/';
 
 export interface IpfsOptions {
   endpoint: string;
@@ -27,7 +35,7 @@ export class IpfsMetadata {
   private ipfsEndpoint: string;
 
   constructor(options?: IpfsOptions) {
-    this.ipfsEndpoint = options?.endpoint || CLOUDFLARE_IPFS_ENDPOINT;
+    this.ipfsEndpoint = options?.endpoint || DEFAULT_IPFS_ENDPOINT;
   }
 
   async getMetadataForEvent<T extends MetadataKey>(

@@ -329,7 +329,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `D` | extends `Object` |
-| `E` | extends ``"DomainMetadata"`` |
+| `E` | extends ``"DomainMetadata"`` \| ``"Annotation"`` \| ``"ColonyMetadata"`` |
 
 #### Parameters
 

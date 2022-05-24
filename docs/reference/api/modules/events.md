@@ -81,4 +81,6 @@ ___
 
 | Name | Type |
 | :------ | :------ |
+| `Annotation` | `Record`<{ `annotationMessage`: `String` = String }, ``false``\> |
+| `ColonyMetadata` | `Record`<{ `colonyAvatarHash`: `String` = String; `colonyDisplayName`: `String` = String; `colonyTokens`: `Arr`<`String`, ``false``\>  }, ``false``\> |
 | `DomainMetadata` | `Record`<{ `domainColor`: `String` = String; `domainName`: `String` = String; `domainPurpose`: `String` = String }, ``false``\> |

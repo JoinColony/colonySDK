@@ -36,7 +36,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `T` | extends ``"DomainMetadata"`` |
+| `T` | extends ``"DomainMetadata"`` \| ``"Annotation"`` \| ``"ColonyMetadata"`` |
 
 #### Parameters
 
