@@ -15,13 +15,24 @@ import {
   FundingPotAddedEventObject,
   OneTxPaymentMadeEventObject,
 } from '@colony/colony-js/extras';
-import type { BigNumberish } from 'ethers';
+import type {
+  BigNumberish,
+  ContractReceipt,
+  ContractTransaction,
+} from 'ethers';
 
 import { ColonyToken } from './ColonyToken';
 import { extractEvent } from '../utils';
 import { ColonyNetwork } from './ColonyNetwork';
+import { MetadataKey, MetadataValue } from '../events';
 
 export type SupportedColonyClient = ColonyClientV8 | ColonyClientV9;
+
+export interface TransactionResult<D, E extends MetadataKey> {
+  data: D;
+  receipt: ContractReceipt;
+  getMetadata?: () => Promise<MetadataValue<E>>;
+}
 
 export class Colony {
   /** The currently supported Colony version. If a Colony is not on this version it has to be upgraded.
@@ -120,8 +131,9 @@ export class Colony {
    * @remarks
    * Currently you can only add domains within the `Root` domain. This restriction will be lifted soon
    *
+   * @param metadataCid An IPFS [CID](https://docs.ipfs.io/concepts/content-addressing/#identifier-formats) for a JSON file containing the metadata described below. For now, we would like to keep it agnostic to any IPFS upload mechanism, so you have to upload the file manually and provide your own hash (by using, for example, [Pinata](https://docs.pinata.cloud/))
    *
-   * @returns A tupel of event data, contract receipt and optional metadata getter function
+   * @returns A tupel: `[eventData, ContractReceipt, getMetaData]`
    *
    * **Event data**
    * | Property | Type | Description |
@@ -138,10 +150,20 @@ export class Colony {
    * | `domainColor` | string | The color assigned to this team |
    * | `domainPurpose` | string | The purpose for this team (a broad description) |
    */
-  async createTeam() {
-    const tx = await this.colonyClient['addDomainWithProofs(uint256)'](
-      Id.RootDomain,
-    );
+  async createTeam(metadataCid?: string) {
+    let tx: ContractTransaction;
+
+    if (metadataCid) {
+      tx = await this.colonyClient['addDomainWithProofs(uint256,string)'](
+        Id.RootDomain,
+        metadataCid,
+      );
+    } else {
+      tx = await this.colonyClient['addDomainWithProofs(uint256)'](
+        Id.RootDomain,
+      );
+    }
+
     const receipt = await tx.wait();
 
     const data = {
@@ -150,21 +172,28 @@ export class Colony {
       ...extractEvent<DomainMetadataEventObject>('DomainMetadata', receipt),
     };
 
+    return this.returnTxData(data, 'DomainMetadata', receipt);
+  }
+
+  async returnTxData<D extends { metadata?: string }, E extends MetadataKey>(
+    data: D,
+    metadataEvent: E,
+    receipt: ContractReceipt,
+  ): Promise<
+    [D, ContractReceipt, () => Promise<MetadataValue<E>>] | [D, ContractReceipt]
+  > {
     if (data.metadata) {
-      const getMetdata =
+      const getMetadata =
         this.colonyNetwork.ipfsMetadata.getMetadataForEvent.bind(
           this.colonyNetwork.ipfsMetadata,
-          'DomainMetadata',
+          metadataEvent,
           data.metadata,
         );
-      return [data, receipt, getMetdata] as [
-        typeof data,
-        typeof receipt,
-        typeof getMetdata,
-      ];
+
+      return [data, receipt, getMetadata];
     }
 
-    return [data, receipt] as [typeof data, typeof receipt];
+    return [data, receipt];
   }
 
   /**
@@ -173,6 +202,7 @@ export class Colony {
    * Anyone can call this function. Claims funds _for_ the Colony that have been sent to the Colony's contract address or minted funds of the Colony's native token. This function _has_ to be called in order for the funds to appear in the Colony's treasury. You can provide a token address for the token to be claimed. Otherwise it will claim the outstanding funds of the Colony's native token
    *
    * @param tokenAddress The address of the token to claim the funds for. Default is the Colony's native token
+   *
    * @returns A tupel of event data and contract receipt
    *
    * **Event data**

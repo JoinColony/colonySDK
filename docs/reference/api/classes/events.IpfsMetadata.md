@@ -30,7 +30,7 @@
 
 ### getMetadataForEvent
 
-▸ **getMetadataForEvent**<`T`\>(`eventName`, `ipfsCid`): `Promise`<`Static`<{ `DomainMetadata`: `Record`<{ `domainColor`: `String` = String; `domainName`: `String` = String; `domainPurpose`: `String` = String }, ``false``\>  }[`T`]\>\>
+▸ **getMetadataForEvent**<`T`\>(`eventName`, `ipfsCid`): `Promise`<[`MetadataValue`](../modules/events.md#metadatavalue)<`T`\>\>
 
 #### Type parameters
 
@@ -47,4 +47,4 @@
 
 #### Returns
 
-`Promise`<`Static`<{ `DomainMetadata`: `Record`<{ `domainColor`: `String` = String; `domainName`: `String` = String; `domainPurpose`: `String` = String }, ``false``\>  }[`T`]\>\>
+`Promise`<[`MetadataValue`](../modules/events.md#metadatavalue)<`T`\>\>

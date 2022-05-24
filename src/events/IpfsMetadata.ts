@@ -4,13 +4,18 @@ import wrapFetch from 'fetch-retry';
 
 const fetchRetry = wrapFetch(fetch);
 
-const IPFS_METADATA = {
+export const IPFS_METADATA = {
   DomainMetadata: Record({
     domainName: String,
     domainColor: String,
     domainPurpose: String,
   }),
 };
+
+export type MetadataKey = keyof typeof IPFS_METADATA;
+export type MetadataValue<T extends MetadataKey> = Static<
+  typeof IPFS_METADATA[T]
+>;
 
 const CLOUDFLARE_IPFS_ENDPOINT = 'https://cloudflare-ipfs.com/ipfs/';
 
@@ -25,10 +30,10 @@ export class IpfsMetadata {
     this.ipfsEndpoint = options?.endpoint || CLOUDFLARE_IPFS_ENDPOINT;
   }
 
-  async getMetadataForEvent<T extends keyof typeof IPFS_METADATA>(
+  async getMetadataForEvent<T extends MetadataKey>(
     eventName: T,
     ipfsCid: string,
-  ): Promise<Static<typeof IPFS_METADATA[T]>> {
+  ): Promise<MetadataValue<T>> {
     const res = await fetchRetry(`${this.ipfsEndpoint}${ipfsCid}`, {
       headers: {
         Accept: 'application/json',

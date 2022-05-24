@@ -1,28 +1,28 @@
-[Colony SDK 🚀](../README.md) / [Modules](../modules.md) / [events](../modules/events.md) / ColonyEvent
+[Colony SDK 🚀](../README.md) / [Modules](../modules.md) / [events](../modules/events.md) / ColonyEventWithoutMetadata
 
-# Interface: ColonyEvent
+# Interface: ColonyEventWithoutMetadata
 
-[events](../modules/events.md).ColonyEvent
-
-An Event that came from a contract within the Colony Network
+[events](../modules/events.md).ColonyEventWithoutMetadata
 
 ## Hierarchy
 
 - [`ColonyFilter`](events.ColonyFilter.md)
 
-  ↳ **`ColonyEvent`**
+  ↳ **`ColonyEventWithoutMetadata`**
+
+  ↳↳ [`ColonyEventWithMetadata`](events.ColonyEventWithMetadata.md)
 
 ## Table of contents
 
 ### Properties
 
-- [address](events.ColonyEvent.md#address)
-- [data](events.ColonyEvent.md#data)
-- [eventName](events.ColonyEvent.md#eventname)
-- [eventSource](events.ColonyEvent.md#eventsource)
-- [fromBlock](events.ColonyEvent.md#fromblock)
-- [toBlock](events.ColonyEvent.md#toblock)
-- [topics](events.ColonyEvent.md#topics)
+- [address](events.ColonyEventWithoutMetadata.md#address)
+- [data](events.ColonyEventWithoutMetadata.md#data)
+- [eventName](events.ColonyEventWithoutMetadata.md#eventname)
+- [eventSource](events.ColonyEventWithoutMetadata.md#eventsource)
+- [fromBlock](events.ColonyEventWithoutMetadata.md#fromblock)
+- [toBlock](events.ColonyEventWithoutMetadata.md#toblock)
+- [topics](events.ColonyEventWithoutMetadata.md#topics)
 
 ## Properties
 

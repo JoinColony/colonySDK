@@ -20,6 +20,7 @@ The API is subject to change as we find more applications for this
 ### Properties
 
 - [eventSources](events.ColonyEvents.md#eventsources)
+- [ipfsMetadata](events.ColonyEvents.md#ipfsmetadata)
 - [provider](events.ColonyEvents.md#provider)
 
 ### Methods
@@ -52,6 +53,12 @@ the only provider that supports topic filtering by multiple addresses
 ### eventSources
 
 • **eventSources**: [`EventSources`](../interfaces/events.EventSources.md)
+
+___
+
+### ipfsMetadata
+
+• **ipfsMetadata**: [`IpfsMetadata`](events.IpfsMetadata.md)
 
 ___
 
@@ -160,7 +167,7 @@ ___
 
 ### getEvents
 
-▸ **getEvents**(`filter`): `Promise`<[`ColonyEvent`](../interfaces/events.ColonyEvent.md)[]\>
+▸ **getEvents**(`filter`): `Promise`<[`ColonyEventWithoutMetadata`](../interfaces/events.ColonyEventWithoutMetadata.md)[]\>
 
 Get events for a single filter
 
@@ -188,15 +195,15 @@ const domainAdded = colonyEvents.createFilter(
 
 #### Returns
 
-`Promise`<[`ColonyEvent`](../interfaces/events.ColonyEvent.md)[]\>
+`Promise`<[`ColonyEventWithoutMetadata`](../interfaces/events.ColonyEventWithoutMetadata.md)[]\>
 
-An array of [ColonyEvent](../interfaces/events.ColonyEvent.md)s
+An array of [ColonyEvent](../modules/events.md#colonyevent)s
 
 ___
 
 ### getMultiEvents
 
-▸ **getMultiEvents**(`filters`, `options?`): `Promise`<[`ColonyEvent`](../interfaces/events.ColonyEvent.md)[]\>
+▸ **getMultiEvents**(`filters`, `options?`): `Promise`<[`ColonyEventWithoutMetadata`](../interfaces/events.ColonyEventWithoutMetadata.md)[]\>
 
 Get events for multiple filters across multiple addresses at once
 
@@ -239,6 +246,6 @@ const domainMetadata = colonyEvents.createMultiFilter(
 
 #### Returns
 
-`Promise`<[`ColonyEvent`](../interfaces/events.ColonyEvent.md)[]\>
+`Promise`<[`ColonyEventWithoutMetadata`](../interfaces/events.ColonyEventWithoutMetadata.md)[]\>
 
-An array of [ColonyEvent](../interfaces/events.ColonyEvent.md)s
+An array of [ColonyEvent](../modules/events.md#colonyevent)s

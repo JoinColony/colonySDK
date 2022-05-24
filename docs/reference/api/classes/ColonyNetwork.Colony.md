@@ -23,6 +23,7 @@
 - [getToken](ColonyNetwork.Colony.md#gettoken)
 - [moveFundsToTeam](ColonyNetwork.Colony.md#movefundstoteam)
 - [pay](ColonyNetwork.Colony.md#pay)
+- [returnTxData](ColonyNetwork.Colony.md#returntxdata)
 
 ## Properties
 
@@ -85,18 +86,24 @@ ___
 
 ### createTeam
 
-▸ **createTeam**(): `Promise`<[{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`, (...`args`: []) => `Promise`<{ `domainColor`: `string` ; `domainName`: `string` ; `domainPurpose`: `string`  }\>] \| [{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`]\>
+▸ **createTeam**(`metadataCid?`): `Promise`<[{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`, () => `Promise`<{ `domainColor`: `string` ; `domainName`: `string` ; `domainPurpose`: `string`  }\>] \| [{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`]\>
 
 Create a team within a Colony
 
 **`remarks`**
 Currently you can only add domains within the `Root` domain. This restriction will be lifted soon
 
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `metadataCid?` | `string` | An IPFS [CID](https://docs.ipfs.io/concepts/content-addressing/#identifier-formats) for a JSON file containing the metadata described below. For now, we would like to keep it agnostic to any IPFS upload mechanism, so you have to upload the file manually and provide your own hash (by using, for example, [Pinata](https://docs.pinata.cloud/)) |
+
 #### Returns
 
-`Promise`<[{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`, (...`args`: []) => `Promise`<{ `domainColor`: `string` ; `domainName`: `string` ; `domainPurpose`: `string`  }\>] \| [{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`]\>
+`Promise`<[{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`, () => `Promise`<{ `domainColor`: `string` ; `domainName`: `string` ; `domainPurpose`: `string`  }\>] \| [{ `agent?`: `string` ; `domainId?`: `BigNumber` ; `fundingPotId?`: `BigNumber` ; `metadata?`: `string`  }, `ContractReceipt`]\>
 
-A tupel of event data, contract receipt and optional metadata getter function
+A tupel: `[eventData, ContractReceipt, getMetaData]`
 
 **Event data**
 | Property | Type | Description |
@@ -310,3 +317,28 @@ A tupel of event data and contract receipt
 | `agent` | string | The address that is responsible for triggering this event |
 | `fundamentalId` | BigNumber | The newly added payment id |
 | `nPayouts` | BigNumber | Number of payouts in total |
+
+___
+
+### returnTxData
+
+▸ **returnTxData**<`D`, `E`\>(`data`, `metadataEvent`, `receipt`): `Promise`<[`D`, `ContractReceipt`, () => `Promise`<[`MetadataValue`](../modules/events.md#metadatavalue)<`E`\>\>] \| [`D`, `ContractReceipt`]\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `D` | extends `Object` |
+| `E` | extends ``"DomainMetadata"`` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `data` | `D` |
+| `metadataEvent` | `E` |
+| `receipt` | `ContractReceipt` |
+
+#### Returns
+
+`Promise`<[`D`, `ContractReceipt`, () => `Promise`<[`MetadataValue`](../modules/events.md#metadatavalue)<`E`\>\>] \| [`D`, `ContractReceipt`]\>

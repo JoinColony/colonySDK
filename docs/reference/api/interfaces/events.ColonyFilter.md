@@ -12,7 +12,7 @@ A Colony extended ethers Filter to keep track of where events are coming from
 
   ↳ **`ColonyFilter`**
 
-  ↳↳ [`ColonyEvent`](events.ColonyEvent.md)
+  ↳↳ [`ColonyEventWithoutMetadata`](events.ColonyEventWithoutMetadata.md)
 
 ## Table of contents
 
