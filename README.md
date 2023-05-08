@@ -1,3 +1,5 @@
+# MOVED. Colony SDK lives [here](https://github.com/JoinColony/colonyJS/tree/main/packages/sdk) now.
+
 🚀 The Colony SDK. Get started with Colony quickly
 
 <div align="center">
